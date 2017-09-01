@@ -1,9 +1,12 @@
 package edu.coursera.parallel;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -46,7 +49,13 @@ public final class StudentAnalytics {
      */
     public double averageAgeOfEnrolledStudentsParallelStream(
             final Student[] studentArray) {
-        throw new UnsupportedOperationException();
+    	double averageAge=
+         Stream.of(studentArray).
+         parallel().
+         filter(s->s.checkIsCurrent()).
+         mapToDouble(s->s.getAge()).
+         average().getAsDouble();
+    	return averageAge;
     }
 
     /**
@@ -100,7 +109,43 @@ public final class StudentAnalytics {
      */
     public String mostCommonFirstNameOfInactiveStudentsParallelStream(
             final Student[] studentArray) {
-        throw new UnsupportedOperationException();
+    	Map<String,Long> nameCounts =Stream.of(studentArray).
+    			parallel().filter(s->!s.checkIsCurrent()).
+    			collect(Collectors.groupingBy(Student::getFirstName,Collectors.counting()));
+    
+    	Map<String,Integer> nameCounts1 =Stream.of(studentArray).
+    			parallel().filter(s->!s.checkIsCurrent()).
+    			collect(Collectors.groupingBy(Student::getFirstName,Collectors.summingInt(s->1)));
+    	
+//    	String name = nameCounts1.entrySet().parallelStream().sorted(Map.Entry.<String,Long> comparingByValue().reversed());
+//    	
+//    	return nameCounts1.entrySet().parallelStream().sorted(Comparator.comparing(Map.Entry::getValue)).max(paramComparator).toString();
+//    	
+//    	Map<String,Long> nameCounts1 =Stream.of(studentArray).
+//    			parallel().filter(s->!s.checkIsCurrent()).
+//    			collect(Collectors.toMap(getFirstName, Collectors.counting()));
+   	return null;
+//    	Map<String,Long> nameCountsAnotherWay =Stream.of(studentArray).
+//    			parallel().filter(s->!s.checkIsCurrent()).
+//    			collect(Collectors.toMap(p->p, arg1, arg2));
+    //	String name =Stream.of(nameCounts.entrySet()).parallel().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder());
+    }
+    
+    public static void main(String[] args){
+//    	Map<String,String> map=Arrays.asList("a", "b", "c")
+//        .stream()
+//        .map(Function.identity()) // <- This,
+//        .map(str -> str)          // <- is the same as this.
+//        .collect(Collectors.toMap(
+//                     Function.identity(), // <-- And this,
+//                     str -> str)); 
+    	
+    	List<String> list = new ArrayList<>();
+		list.add("Mohan");
+		list.add("Sohan");
+		list.add("Mahesh");
+		Map<String, Object> map = list.stream().collect(Collectors.toMap(Function.identity(), Function.identity()));
+		map.forEach((x, y) -> System.out.println("Key: " + x +", value: "+ y));
     }
 
     /**
@@ -136,6 +181,6 @@ public final class StudentAnalytics {
      */
     public int countNumberOfFailedStudentsOlderThan20ParallelStream(
             final Student[] studentArray) {
-        throw new UnsupportedOperationException();
+       return (int)Stream.of(studentArray).parallel().filter(s->!s.checkIsCurrent()&&s.getAge()>20&&s.getGrade()<65).count();
     }
 }
