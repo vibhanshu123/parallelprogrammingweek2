@@ -94,7 +94,6 @@ public final class StudentAnalytics {
                 mostCommonCount = entry.getValue();
             }
         }
-
         return mostCommon;
     }
 
@@ -111,24 +110,14 @@ public final class StudentAnalytics {
             final Student[] studentArray) {
     	Map<String,Long> nameCounts =Stream.of(studentArray).
     			parallel().filter(s->!s.checkIsCurrent()).
-    			collect(Collectors.groupingBy(Student::getFirstName,Collectors.counting()));
+    			collect(Collectors.groupingBy(Student::getFirstName, Collectors.counting()));
     
     	Map<String,Integer> nameCounts1 =Stream.of(studentArray).
     			parallel().filter(s->!s.checkIsCurrent()).
     			collect(Collectors.groupingBy(Student::getFirstName,Collectors.summingInt(s->1)));
     	
-//    	String name = nameCounts1.entrySet().parallelStream().sorted(Map.Entry.<String,Long> comparingByValue().reversed());
-//    	
-//    	return nameCounts1.entrySet().parallelStream().sorted(Comparator.comparing(Map.Entry::getValue)).max(paramComparator).toString();
-//    	
-//    	Map<String,Long> nameCounts1 =Stream.of(studentArray).
-//    			parallel().filter(s->!s.checkIsCurrent()).
-//    			collect(Collectors.toMap(getFirstName, Collectors.counting()));
-   	return null;
-//    	Map<String,Long> nameCountsAnotherWay =Stream.of(studentArray).
-//    			parallel().filter(s->!s.checkIsCurrent()).
-//    			collect(Collectors.toMap(p->p, arg1, arg2));
-    //	String name =Stream.of(nameCounts.entrySet()).parallel().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder());
+    	String name = nameCounts1.entrySet().parallelStream().sorted(Comparator.comparing(Map.Entry::getValue)).findFirst().get().getKey();
+    	return nameCounts1.entrySet().parallelStream().sorted(Map.Entry.<String,Integer>comparingByValue().reversed()).findFirst().get().getKey();
     }
     
     public static void main(String[] args){
